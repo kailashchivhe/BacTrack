@@ -48,6 +48,10 @@ public class HomeFragment extends Fragment {
             initConnecting();
             viewModel.connectToNearestBreathalyzer();
         });
+        binding.history.setOnClickListener( v ->{
+            viewModel.setBackFlag( true );
+            navigateToGraph();
+        });
         viewModel.getConnectionLiveData().observe(getViewLifecycleOwner(), aBoolean -> {
             if(aBoolean){
                 Log.d("HomeFragment", "onChanged: "+aBoolean);
@@ -61,6 +65,10 @@ public class HomeFragment extends Fragment {
                 Toast.makeText( requireContext(), "Disconnected", Toast.LENGTH_LONG ).show();
             }
         });
+    }
+
+    private void navigateToGraph() {
+        NavHostFragment.findNavController( this ).navigate( R.id.action_homeFragment_to_graphFragment );
     }
 
     private void initConnecting() {

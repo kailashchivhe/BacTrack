@@ -195,7 +195,7 @@ public class BacTrackSingleton implements BACtrackAPICallbacks{
     }
 
     public void setHomeBackFlag(boolean b) {
-        bBackFlag = true;
+        bBackFlag = b;
     }
 
     public boolean getHomeBackFlag(){

@@ -12,4 +12,6 @@
     <string name="bacTrackDevice">BacTrack Device</string>
     <string name="take_test">Click here to Test</string>
     <string name="get_ready_to_blow_in_12_seconds">Get ready to blow in 13 seconds</string>
+    <string name="show_history">Show History</string>
+    <string name="no_data">No Data</string>
 </resources>

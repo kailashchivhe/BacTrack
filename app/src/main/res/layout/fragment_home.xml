@@ -34,8 +34,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/connectButton"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/history"
         android:layout_centerHorizontal="true"
-        android:visibility="gone" />
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/history"
+        android:text="@string/show_history"
+        android:textColor="#fff"
+        android:backgroundTint="@color/purple_500"
+        android:layout_margin="8dp"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>

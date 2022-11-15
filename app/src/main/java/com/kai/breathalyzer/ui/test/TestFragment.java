@@ -99,6 +99,7 @@ public class TestFragment extends Fragment {
                         binding.result.setTextColor(Color.RED);
                     }
                     binding.result.setText("Result : " + aFloat.toString());
+                    //TODO save result and date to database
                 }
             }
         });

@@ -12,12 +12,21 @@
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_homeFragment_to_testFragment"
-            app:destination="@id/testFragment" />
+            app:destination="@id/resultFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_graphFragment"
+            app:destination="@id/graphFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/testFragment"
+        android:id="@+id/resultFragment"
         android:name="com.kai.breathalyzer.ui.test.TestFragment"
         android:label="fragment_test"
-        tools:layout="@layout/fragment_test" />
+        tools:layout="@layout/fragment_test" >
+    </fragment>
+    <fragment
+        android:id="@+id/graphFragment"
+        android:name="com.kai.breathalyzer.ui.results.GraphFragment"
+        android:label="fragment_graph"
+        tools:layout="@layout/fragment_graph" />
 </navigation>
