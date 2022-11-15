@@ -3,11 +3,18 @@ package com.kai.breathalyzer.util;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+
 
 public class ApplicationPermission {
     public static final int REQUEST_CODE_LOCATION_PERMISSIONS = 1002;
@@ -29,6 +36,10 @@ public class ApplicationPermission {
                     Manifest.permission.BLUETOOTH_CONNECT,
                     Manifest.permission.BLUETOOTH_SCAN}, REQUEST_CODE_LOCATION_PERMISSIONS);
         }
+        if(!checkLocationPermissions()){
+            showLocationServicesAlert();
+        }
+        BacTrackSingleton.getInstance( mActivity.getApplicationContext() ).initBacTrackSDK();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.S)
@@ -49,5 +60,38 @@ public class ApplicationPermission {
                 }
             }
         }
+    }
+
+    private final DialogInterface.OnClickListener cancelClickListener = (dialog, which) -> dialog.cancel();
+
+    private void showLocationServicesAlert() {
+        new AlertDialog.Builder(mActivity, android.R.style.Theme_Material_Light_Dialog_Alert)
+                .setMessage("This app requires Location Services to run. Would you like to enable Location Services now?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        mActivity.startActivity(intent);
+                    }
+                })
+                .setNegativeButton((CharSequence) "No", (DialogInterface.OnClickListener) cancelClickListener)
+                .create()
+                .show();
+    }
+
+    private boolean checkLocationPermissions(){
+        LocationManager locationManager = (LocationManager)mActivity.getSystemService(Context.LOCATION_SERVICE);
+        boolean bGPSEnabled = false;
+        boolean bNetworkEnabled = false;
+
+        try {
+            bGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch(Exception ex) {}
+
+        try {
+            bNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch(Exception ex) {}
+
+        return bGPSEnabled && bNetworkEnabled;
     }
 }
