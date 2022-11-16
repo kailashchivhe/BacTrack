@@ -14,4 +14,30 @@
     <string name="get_ready_to_blow_in_12_seconds">Get ready to blow in 13 seconds</string>
     <string name="show_history">Show History</string>
     <string name="no_data">No Data</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="logout">Logout</string>
+    <string name="history">Previous Records</string>
+    <string name="profile">Profile</string>
+
+    <string name="login_fragment_label">Login Fragment</string>
+    <string name="register_fragment_label">Registration Fragment</string>
+    <string name="profile_fragment_label">Profile Fragment</string>
+    <string name="profile_update_fragment_label">Profile Update Fragment</string>
+    <string name="home_fragment_label">Home Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="email_edittext_hint">Email</string>
+    <string name="password_edittext_hint">Password</string>
+    <string name="first_name_edittext_hint">First Name</string>
+    <string name="last_name_edittext_hint">Last Name</string>
+
+    <string name="login_button">Login</string>
+    <string name="registration_button">Register</string>
+    <string name="update_button">Update Profile</string>
+    <string name="action_logout">Logout</string>
+    <string name="action_profile">Profile</string>
 </resources>

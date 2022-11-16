@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@+id/nav_login">
 
     <fragment
         android:id="@+id/homeFragment"
@@ -16,6 +16,16 @@
         <action
             android:id="@+id/action_homeFragment_to_graphFragment"
             app:destination="@id/graphFragment" />
+
+        <action
+            android:id="@+id/action_HomeFragment_to_ProfileFragment"
+            app:destination="@id/nav_profile" />
+        <action
+            android:id="@+id/action_HomeFragment_to_ProfileUpdateFragment"
+            app:destination="@id/nav_profile_update" />
+        <action
+            android:id="@+id/action_HomeFragment_to_LoginFragment"
+            app:destination="@id/nav_login" />
     </fragment>
 
     <fragment
@@ -29,4 +39,60 @@
         android:name="com.kai.breathalyzer.ui.results.GraphFragment"
         android:label="fragment_graph"
         tools:layout="@layout/fragment_graph" />
+
+    <fragment
+        android:id="@+id/nav_login"
+        android:name="com.kai.breathalyzer.ui.login.LoginFragment"
+        android:label="@string/login_fragment_label"
+        tools:layout="@layout/fragment_login">
+
+        <action
+            android:id="@+id/action_LoginFragment_to_RegisterFragment"
+            app:destination="@id/nav_register" />
+        <action
+            android:id="@+id/action_LoginFragment_to_HomeFragment"
+            app:destination="@+id/homeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_register"
+        android:name="com.kai.breathalyzer.ui.registration.RegistrationFragment"
+        android:label="@string/register_fragment_label"
+        tools:layout="@layout/fragment_registration" >
+        <action
+            android:id="@+id/action_RegisterFragment_to_LoginFragment"
+            app:destination="@id/nav_login" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.kai.breathalyzer.ui.profile.ProfileFragment"
+        android:label="@string/profile_fragment_label"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_ProfileFragment_to_LoginFragment"
+            app:destination="@id/nav_login" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_ProfileUpdateFragment"
+            app:destination="@id/nav_profile_update" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_HomeFragment"
+            app:destination="@+id/homeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_profile_update"
+        android:name="com.kai.breathalyzer.ui.profile.ProfileUpdateFragment"
+        android:label="@string/profile_update_fragment_label"
+        tools:layout="@layout/fragment_profile_update">
+        <action
+            android:id="@+id/action_ProfileUpdateFragment_to_LoginFragment"
+            app:destination="@id/nav_login" />
+        <action
+            android:id="@+id/action_ProfileUpdateFragment_to_ProfileFragment"
+            app:destination="@id/nav_profile" />
+        <action
+            android:id="@+id/action_ProfileUpdateFragment_to_HomeFragment"
+            app:destination="@+id/homeFragment" />
+    </fragment>
 </navigation>
