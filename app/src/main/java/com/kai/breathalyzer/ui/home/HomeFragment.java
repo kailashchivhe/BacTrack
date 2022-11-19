@@ -67,15 +67,8 @@ public class HomeFragment extends Fragment {
             onProfileClicked();
             return true;
         }
-        else if(id == R.id.nav_profile){
-            onProfileUpdateClicked();
-            return true;
-        }
         return false;
 
-    }
-    private void onProfileUpdateClicked() {
-        NavHostFragment.findNavController(this).navigate(R.id.action_HomeFragment_to_ProfileUpdateFragment);
     }
 
     private void onProfileClicked() {

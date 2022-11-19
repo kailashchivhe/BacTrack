@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.kai.breathalyzer.R;
@@ -23,11 +24,15 @@ import com.kai.breathalyzer.databinding.FragmentProfileBinding;
 import com.kai.breathalyzer.model.User;
 
 
+
 public class ProfileFragment extends Fragment {
 
     private ProfileViewModel mViewModel;
     FragmentProfileBinding binding;
     SharedPreferences sharedPreferences;
+    String jwtToken;
+    String id;
+    String customerId;
     SharedPreferences.Editor spEditor;
 
     public static ProfileFragment newInstance() {
@@ -50,22 +55,18 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.profile_menu,menu);
         super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.profile_menu,menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_profile_update) {
-            onProfileUpdateClicked();
-            return true;
-        }
-        else if (id == R.id.action_profile_logout) {
+        if(id == R.id.action_profile_home){
             onLogoutClicked();
             return true;
         }
-        else if (id == R.id.action_profile_home) {
+        else if(id == R.id.action_profile_logout) {
             onHomeClicked();
             return true;
         }
@@ -76,18 +77,14 @@ public class ProfileFragment extends Fragment {
         NavHostFragment.findNavController(this).navigate(R.id.action_ProfileFragment_to_HomeFragment);
     }
 
+
     private void onLogoutClicked() {
-        //delete shared preference
+//        delete shared preferences
         sharedPreferences.edit().remove("jwtToken").commit();
         sharedPreferences.edit().remove("email").commit();
         sharedPreferences.edit().remove("customerId").commit();
-        //        goto login page
+//        goto login page
         NavHostFragment.findNavController(this).navigate(R.id.action_ProfileFragment_to_LoginFragment);
-    }
-
-    private void onProfileUpdateClicked() {
-//        goto profileupdate fragment
-        NavHostFragment.findNavController(this).navigate(R.id.action_ProfileFragment_to_ProfileUpdateFragment);
     }
 
     @Override
@@ -96,7 +93,16 @@ public class ProfileFragment extends Fragment {
         mViewModel = new ViewModelProvider(this, new ViewModelProvider.AndroidViewModelFactory(getActivity().getApplication())).get(ProfileViewModel.class);
         // TODO: Use the ViewModel
 
-        mViewModel.getMessageMutableLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
+        mViewModel.getBooleanMutableLiveData().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(aBoolean){
+                    displayMessage("Profile Updated");
+                    navToHome();
+                }
+            }
+        });
+        mViewModel.messageMutableLiveData.observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 if(!s.isEmpty()){
@@ -104,7 +110,7 @@ public class ProfileFragment extends Fragment {
                 }
             }
         });
-        mViewModel.getUserMutableLiveData().observe(getViewLifecycleOwner(), new Observer<User>() {
+        mViewModel.userMutableLiveData.observe(getViewLifecycleOwner(), new Observer<User>() {
             @Override
             public void onChanged(User user) {
                 if(user != null){
@@ -116,26 +122,60 @@ public class ProfileFragment extends Fragment {
     }
 
     private void setUserDetails(User user) {
-        binding.textViewProfileEmail.setText(user.getEmail());
-        binding.textViewProfileFirstName.setText(user.getFirstName());
-        binding.textViewProfileLastName.setText(user.getLastName());
+        binding.editTextTextProfieEmail.setText(user.getEmail());
+        binding.editTextProfileFirstName.setText(user.getFirstName());
+        binding.editTextProfileLastName.setText(user.getLastName());
     }
 
-    private void displayMessage(String s) {
-        Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         sharedPreferences = getActivity().getSharedPreferences("appPreferences", Context.MODE_PRIVATE);
-        String jwtToken = sharedPreferences.getString("jwtToken", "");
-        String id = sharedPreferences.getString("id", "");
-        String customerId = sharedPreferences.getString("customerId", "");
+        jwtToken = sharedPreferences.getString("jwtToken", "");
+        id = sharedPreferences.getString("id", "");
+        customerId = sharedPreferences.getString("customerId", "");
         spEditor = sharedPreferences.edit();
 
         mViewModel.retriveProfile(id,jwtToken);
+        binding.buttonProfileUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onUpdateClicked();
+            }
+        });
+        binding.buttonProfileCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onCancelClicked();
+            }
+        });
     }
 
+    private void onUpdateClicked() {
+        String email = binding.editTextTextProfieEmail.getText().toString();
+        String firstName = binding.editTextProfileFirstName.getText().toString();
+        String lastName = binding.editTextProfileLastName.getText().toString();
+
+        if(!email.isEmpty() && !firstName.isEmpty() && !lastName.isEmpty()){
+            mViewModel.updateProfile(firstName,lastName,id,jwtToken);
+        }
+        else{
+            displayMessage("Please set values to update");
+        }
+    }
+
+    private void displayMessage(String s) {
+        Toast.makeText(getContext(), s, Toast.LENGTH_SHORT).show();
+    }
+
+    private void onCancelClicked(){
+        //GOto profile page
+        navToHome();
+    }
+
+    private void navToHome() {
+        NavHostFragment.findNavController(this).navigate(R.id.action_ProfileFragment_to_HomeFragment);
+    }
 }
