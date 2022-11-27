@@ -3,17 +3,23 @@ package com.kai.breathalyzer.util;
 
 import android.support.annotation.NonNull;
 
+import com.kai.breathalyzer.listener.HistoryRetrivalListener;
 import com.kai.breathalyzer.listener.LoginListener;
+import com.kai.breathalyzer.listener.MeasurementSaveListener;
 import com.kai.breathalyzer.listener.ProfileRetrivalListener;
 import com.kai.breathalyzer.listener.ProfileUpdateListener;
 import com.kai.breathalyzer.listener.RegistrationListener;
 import com.kai.breathalyzer.model.LoginDetails;
 import com.kai.breathalyzer.model.User;
+import com.kai.breathalyzer.model.UserHistory;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -27,6 +33,15 @@ public class APIHelper {
     private static final OkHttpClient client = new OkHttpClient();
     private static final String TAG = "APIHelper";
 
+    private static final String DOMAIN_NAME = "https://bac-track-breathalyzer.herokuapp.com/";
+
+    private static final String LOGIN_URL= DOMAIN_NAME + "api/auth/login";
+    private static final String REGISTRATION_URL = DOMAIN_NAME + "/api/auth/signup";
+    private static final String PROFILE_GET_URL = DOMAIN_NAME + "/api/auth/profile";
+    private static final String PROFILE_POST_URL = DOMAIN_NAME + "/api/auth/profile";
+    private static final String HISTORY_URL = DOMAIN_NAME + "/history";
+    private static final String MEASUREMENT_URL = DOMAIN_NAME + "/newMeasurement";
+
     public APIHelper() {
     }
 
@@ -37,7 +52,7 @@ public class APIHelper {
                 .build();
 
         Request request = new Request.Builder()
-                .url("https://bac-track-breathalyzer.herokuapp.com/api/auth/login")
+                .url(LOGIN_URL)
                 .post(formBody)
                 .build();
 
@@ -82,7 +97,7 @@ public class APIHelper {
                 .build();
 
         Request request = new Request.Builder()
-                .url("https://bac-track-breathalyzer.herokuapp.com/api/auth/signup")
+                .url(REGISTRATION_URL)
                 .post(formBody)
                 .build();
 
@@ -119,8 +134,7 @@ public class APIHelper {
 
     public static void profileRetrival(String id, String jwtToken, ProfileRetrivalListener profileRetrivalListener){
 
-
-        HttpUrl url = HttpUrl.parse("https://bac-track-breathalyzer.herokuapp.com/api/auth/profile").newBuilder()
+        HttpUrl url = HttpUrl.parse(PROFILE_GET_URL).newBuilder()
                 .addQueryParameter("token",jwtToken)
                 .addQueryParameter("userId",id)
                 .build();
@@ -168,7 +182,7 @@ public class APIHelper {
                 .add("lastName", user.getLastName())
                 .build();
 
-        HttpUrl url = HttpUrl.parse("https://bac-track-breathalyzer.herokuapp.com/api/auth/profile").newBuilder()
+        HttpUrl url = HttpUrl.parse(PROFILE_POST_URL).newBuilder()
                 .addQueryParameter("token",user.getJwtToken())
                 .build();
 
@@ -198,5 +212,85 @@ public class APIHelper {
             }
         });
 
+    }
+
+    public static void saveMeasurement(String measurement, String jwtToken, MeasurementSaveListener measurementSaveListener){
+        FormBody formBody = new FormBody.Builder()
+                .add("measurement", measurement)
+                .build();
+
+        HttpUrl url = HttpUrl.parse(MEASUREMENT_URL).newBuilder()
+                .addQueryParameter("token",jwtToken)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(formBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if(response.isSuccessful()){
+                    measurementSaveListener.measurementSaveSuccessfull();
+                } else {
+                    try {
+                        JSONObject updateFailure = new JSONObject(response.body().string());
+                        measurementSaveListener.measurementSaveFailure(updateFailure.getString("message"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+    public static void historyRetrival(String jwtToken, HistoryRetrivalListener historyRetrivalListener){
+        HttpUrl url = HttpUrl.parse(HISTORY_URL).newBuilder()
+                .addQueryParameter("token",jwtToken)
+                .build();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if(response.isSuccessful()){
+                    try {
+//                        JSONObject res = new JSONObject(response.body().string());
+                        List<UserHistory> userHistoryList = new ArrayList<>();
+                        JSONArray array = new JSONArray(response.body().string());
+                        int n = array.length();
+                        for(int i=0;i<n;i++){
+                            JSONObject obj = array.getJSONObject(i).getJSONObject("history");
+                            String measurement = obj.getString("measurement");
+                            String date = obj.getString("date");
+                            userHistoryList.add(new UserHistory(measurement,date));
+                        }
+                        historyRetrivalListener.historyRetrivalSuccessfull(userHistoryList);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        JSONObject historyRetrivalFailure = new JSONObject(response.body().toString());
+                        historyRetrivalListener.historyRetrivalFailure(historyRetrivalFailure.getString("message"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 }
