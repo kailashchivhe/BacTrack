@@ -1,10 +1,11 @@
 package com.kai.breathalyzer.ui.results;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,21 +19,16 @@ import com.anychart.chart.common.dataentry.DataEntry;
 import com.anychart.chart.common.dataentry.ValueDataEntry;
 import com.anychart.charts.Cartesian;
 import com.anychart.core.cartesian.series.Column;
-import com.anychart.core.cartesian.series.Line;
-import com.anychart.data.Mapping;
-import com.anychart.data.Set;
 import com.anychart.enums.Anchor;
 import com.anychart.enums.HoverMode;
-import com.anychart.enums.MarkerType;
 import com.anychart.enums.Position;
 import com.anychart.enums.TooltipPositionMode;
-import com.anychart.graphics.vector.Stroke;
-import com.kai.breathalyzer.R;
 import com.kai.breathalyzer.databinding.FragmentGraphBinding;
 import com.kai.breathalyzer.model.UserHistory;
-import com.kai.breathalyzer.ui.test.TestViewModel;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class GraphFragment extends Fragment {
@@ -76,14 +72,23 @@ public class GraphFragment extends Fragment {
         });
     }
 
-    private void setData(List<UserHistory> userHistories ){
+    private void setData(List<UserHistory> userHistories ) {
         binding.progressCircular.setVisibility(View.GONE);
         binding.anyChart.setVisibility( View.VISIBLE );
         Cartesian cartesian = AnyChart.column();
 
         List<DataEntry> data = new ArrayList<>();
         for(UserHistory userHistory : userHistories ){
-            data.add(new ValueDataEntry(userHistory.getDate(), Double.parseDouble(userHistory.getMeasurements())));
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            @SuppressLint("SimpleDateFormat") SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
+            try {
+                Date date = inputFormat.parse(userHistory.getDate());
+                String formattedDate = outputFormat.format(date);
+                data.add(new ValueDataEntry(formattedDate, Double.parseDouble(userHistory.getMeasurements())));
+            }
+            catch (ParseException exception){
+                exception.printStackTrace();
+            }
         }
 
         Column column = cartesian.column(data);
