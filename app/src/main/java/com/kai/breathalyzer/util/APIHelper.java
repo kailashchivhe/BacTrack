@@ -230,7 +230,7 @@ public class APIHelper {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if(response.isSuccessful()){
-                    measurementSaveListener.measurementSaveSuccessfull();
+                    measurementSaveListener.measurementSaveSuccessful();
                 } else {
                     try {
                         JSONObject updateFailure = new JSONObject(response.body().string());
@@ -261,7 +261,6 @@ public class APIHelper {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if(response.isSuccessful()){
                     try {
-//                        JSONObject res = new JSONObject(response.body().string());
                         List<UserHistory> userHistoryList = new ArrayList<>();
                         JSONArray array = new JSONArray(response.body().string());
                         int n = array.length();

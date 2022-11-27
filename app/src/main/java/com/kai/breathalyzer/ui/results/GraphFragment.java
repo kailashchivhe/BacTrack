@@ -1,12 +1,17 @@
 package com.kai.breathalyzer.ui.results;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.anychart.AnyChart;
 import com.anychart.chart.common.dataentry.DataEntry;
@@ -24,6 +29,7 @@ import com.anychart.enums.TooltipPositionMode;
 import com.anychart.graphics.vector.Stroke;
 import com.kai.breathalyzer.R;
 import com.kai.breathalyzer.databinding.FragmentGraphBinding;
+import com.kai.breathalyzer.model.UserHistory;
 import com.kai.breathalyzer.ui.test.TestViewModel;
 
 import java.util.ArrayList;
@@ -33,10 +39,16 @@ public class GraphFragment extends Fragment {
 
     FragmentGraphBinding binding;
     GraphViewModel viewModel;
+    SharedPreferences sharedPreferences;
+    String jwtToken;
+    String id;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPreferences = getActivity().getSharedPreferences("appPreferences", Context.MODE_PRIVATE);
+        jwtToken = sharedPreferences.getString("jwtToken", "");
+        id = sharedPreferences.getString("id", "");
     }
 
     @Override
@@ -50,20 +62,29 @@ public class GraphFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //TODO make list fetch call and init observer
+        viewModel.getData(jwtToken);
+        viewModel.getUserHistoryMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserHistory>>() {
+            @Override
+            public void onChanged(@Nullable List<UserHistory> userHistories) {
+                if( userHistories != null && userHistories.size() > 0 ) {
+                    setData(userHistories);
+                }
+                else{
+                    Toast.makeText( getContext(), "No Data Available", Toast.LENGTH_LONG ).show();
+                }
+            }
+        });
     }
 
-    private void setData(){
+    private void setData(List<UserHistory> userHistories ){
         binding.progressCircular.setVisibility(View.GONE);
         binding.anyChart.setVisibility( View.VISIBLE );
         Cartesian cartesian = AnyChart.column();
 
         List<DataEntry> data = new ArrayList<>();
-        data.add(new ValueDataEntry("10/15/2022", 0.4));
-        data.add(new ValueDataEntry("10/16/2022", 0.1));
-        data.add(new ValueDataEntry("10/17/2022", 0.16));
-        data.add(new ValueDataEntry("10/18/2022", 0.5));
-        data.add(new ValueDataEntry("10/19/2022", 0.12));
+        for(UserHistory userHistory : userHistories ){
+            data.add(new ValueDataEntry(userHistory.getDate(), Double.parseDouble(userHistory.getMeasurements())));
+        }
 
         Column column = cartesian.column(data);
 

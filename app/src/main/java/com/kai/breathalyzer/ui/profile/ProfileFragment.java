@@ -32,7 +32,6 @@ public class ProfileFragment extends Fragment {
     SharedPreferences sharedPreferences;
     String jwtToken;
     String id;
-    String customerId;
     SharedPreferences.Editor spEditor;
 
     public static ProfileFragment newInstance() {
@@ -135,7 +134,6 @@ public class ProfileFragment extends Fragment {
         sharedPreferences = getActivity().getSharedPreferences("appPreferences", Context.MODE_PRIVATE);
         jwtToken = sharedPreferences.getString("jwtToken", "");
         id = sharedPreferences.getString("id", "");
-        customerId = sharedPreferences.getString("customerId", "");
         spEditor = sharedPreferences.edit();
 
         mViewModel.retriveProfile(id,jwtToken);

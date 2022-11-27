@@ -3,6 +3,8 @@ package com.kai.breathalyzer.ui.test;
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,10 +21,16 @@ import com.kai.breathalyzer.databinding.FragmentTestBinding;
 public class TestFragment extends Fragment {
     FragmentTestBinding binding;
     TestViewModel testViewModel;
+    SharedPreferences sharedPreferences;
+    String jwtToken;
+    String id;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPreferences = getActivity().getSharedPreferences("appPreferences", Context.MODE_PRIVATE);
+        jwtToken = sharedPreferences.getString("jwtToken", "");
+        id = sharedPreferences.getString("id", "");
     }
 
     @Override
@@ -87,6 +95,7 @@ public class TestFragment extends Fragment {
             @Override
             public void onChanged(@Nullable Float aFloat) {
                 if( aFloat != null ) {
+                    testViewModel.saveData(aFloat, jwtToken);
                     binding.result.setVisibility( View.VISIBLE );
                     binding.message.setText("Analysis Completed");
                     if(aFloat <= 0.01f){
@@ -99,7 +108,6 @@ public class TestFragment extends Fragment {
                         binding.result.setTextColor(Color.RED);
                     }
                     binding.result.setText("Result : " + aFloat.toString());
-                    //TODO save result and date to database
                 }
             }
         });

@@ -8,12 +8,14 @@ import android.util.Log;
 
 import com.kai.breathalyzer.listener.BatteryListener;
 import com.kai.breathalyzer.listener.ConnectionListener;
+import com.kai.breathalyzer.listener.MeasurementSaveListener;
 import com.kai.breathalyzer.listener.SerialListener;
 import com.kai.breathalyzer.listener.TestListener;
 import com.kai.breathalyzer.listener.UseCountListener;
+import com.kai.breathalyzer.util.APIHelper;
 import com.kai.breathalyzer.util.BacTrackSingleton;
 
-public class TestViewModel extends AndroidViewModel implements BatteryListener, TestListener, SerialListener, UseCountListener, ConnectionListener {
+public class TestViewModel extends AndroidViewModel implements BatteryListener, TestListener, SerialListener, UseCountListener, ConnectionListener, MeasurementSaveListener {
     private BacTrackSingleton bacTrackSingleton;
     private MutableLiveData<Integer> batteryLiveData;
     private MutableLiveData<String> serialLiveData;
@@ -126,5 +128,19 @@ public class TestViewModel extends AndroidViewModel implements BatteryListener, 
 
     public void restrictExtraEvent(){
         bacTrackSingleton.setHomeBackFlag(true);
+    }
+
+    public void saveData(Float aFloat, String jwtToken) {
+        APIHelper.saveMeasurement(aFloat.toString(), jwtToken, this );
+    }
+
+    @Override
+    public void measurementSaveSuccessful() {
+        Log.d("TestViewModel", "measurementSaveSuccessful: ");
+    }
+
+    @Override
+    public void measurementSaveFailure(String message) {
+        Log.d("TestViewModel", "measurementSaveFailure: " + message );
     }
 }
