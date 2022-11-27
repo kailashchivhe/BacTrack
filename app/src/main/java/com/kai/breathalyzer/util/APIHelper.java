@@ -30,17 +30,17 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class APIHelper {
-    private static final OkHttpClient client = new OkHttpClient();
+    private static OkHttpClient client = new OkHttpClient();
     private static final String TAG = "APIHelper";
 
-    private static final String DOMAIN_NAME = "https://bac-track-breathalyzer.herokuapp.com/";
+    private static final String DOMAIN_NAME = "https://bactrackserver.onrender.com/";
 
     private static final String LOGIN_URL= DOMAIN_NAME + "api/auth/login";
-    private static final String REGISTRATION_URL = DOMAIN_NAME + "/api/auth/signup";
-    private static final String PROFILE_GET_URL = DOMAIN_NAME + "/api/auth/profile";
-    private static final String PROFILE_POST_URL = DOMAIN_NAME + "/api/auth/profile";
-    private static final String HISTORY_URL = DOMAIN_NAME + "/history";
-    private static final String MEASUREMENT_URL = DOMAIN_NAME + "/newMeasurement";
+    private static final String REGISTRATION_URL = DOMAIN_NAME + "api/auth/signup";
+    private static final String PROFILE_GET_URL = DOMAIN_NAME + "api/auth/profile";
+    private static final String PROFILE_POST_URL = DOMAIN_NAME + "api/auth/profile";
+    private static final String HISTORY_URL = DOMAIN_NAME + "history";
+    private static final String MEASUREMENT_URL = DOMAIN_NAME + "newMeasurement";
 
     public APIHelper() {
     }
@@ -69,9 +69,8 @@ public class APIHelper {
                         JSONObject res = new JSONObject(response.body().string());
                         String id = res.getString("id");
                         String jwtToken = res.getString("token");
-                        String customerId = res.getString("customerId");
 
-                        loginListener.loginSuccessfull(new LoginDetails(id, jwtToken, customerId));
+                        loginListener.loginSuccessfull(new LoginDetails(id, jwtToken));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -118,14 +117,8 @@ public class APIHelper {
                         e.printStackTrace();
                     }
                 } else {
-                    JSONObject jsonErrorMessage = null;
-                    try {
-                        jsonErrorMessage = new JSONObject(response.body().string());
-                        registerationListener.registerationFailure(jsonErrorMessage.getString("message"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
+                    String jsonErrorMessage = "Unable to Register";
+                    registerationListener.registerationFailure(jsonErrorMessage);
                 }
             }
         });

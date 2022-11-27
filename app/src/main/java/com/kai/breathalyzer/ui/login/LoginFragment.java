@@ -62,7 +62,6 @@ public class LoginFragment extends Fragment {
                     //save in shared preference
                     spEditor.putString("id", loginDetails.getId());
                     spEditor.putString("jwtToken", loginDetails.getJwtToken());
-                    spEditor.putString("customerId", loginDetails.getCustomerId());
                     spEditor.apply();
                     navigateToHome();
                 }

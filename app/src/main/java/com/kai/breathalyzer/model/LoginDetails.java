@@ -3,20 +3,11 @@ package com.kai.breathalyzer.model;
 public class LoginDetails {
     String id;
     String jwtToken;
-    String customerId;
 
-    public String getCustomerId() {
-        return customerId;
-    }
 
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
-    }
-
-    public LoginDetails(String id, String jwtToken, String customerId) {
+    public LoginDetails(String id, String jwtToken) {
         this.id = id;
         this.jwtToken = jwtToken;
-        this.customerId = customerId;
     }
 
     public String getId() {
