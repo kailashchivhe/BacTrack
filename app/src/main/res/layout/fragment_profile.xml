@@ -52,6 +52,8 @@
         android:layout_height="60dp"
         android:layout_marginTop="32dp"
         android:text="@string/update_button"
+        android:textColor="#fff"
+        android:backgroundTint="@color/purple_500"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextProfieEmail" />
@@ -62,6 +64,8 @@
         android:layout_height="60dp"
         android:layout_marginTop="8dp"
         android:text="@android:string/cancel"
+        android:textColor="#fff"
+        android:backgroundTint="@color/purple_500"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonProfileUpdate" />
